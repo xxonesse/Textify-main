@@ -1,0 +1,81 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Black.ttf",
+      "sha1": "405a6e7828f292099161bf5cccb5402ec19f1833"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-BlackItalic.ttf",
+      "sha1": "cffbcaeae7ec6a4baabdcdd02227beddfaa49d5e"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Bold.ttf",
+      "sha1": "0bd7e256f73efd0a8135c5090d62f150107ff37a"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-BoldItalic.ttf",
+      "sha1": "1a5d8555a995733597d706fe3d02a38aa48dcc44"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-ExtraBold.ttf",
+      "sha1": "18efb439fa36b6da24cf550de93a94c92cbe8d71"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-ExtraBoldItalic.ttf",
+      "sha1": "33ae2a753d95b035cf7534a9af614fde3de2bdc0"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-ExtraLight.ttf",
+      "sha1": "2487b745e3b46baa3c249062a48b79efeb48d314"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-ExtraLightItalic.ttf",
+      "sha1": "2b61bfae7dc344b368c1a4c95c25f0b2e65ac415"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Italic.ttf",
+      "sha1": "cd74c031ed87c52f81b12e1886133283f36cc44a"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Light.ttf",
+      "sha1": "4c7d4497bc6b506d9fefdc8227418bbb637bc524"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-LightItalic.ttf",
+      "sha1": "e6985b646a67ed2885e15c3f5b23dab28246621b"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Medium.ttf",
+      "sha1": "7525dd63d853386f3c192fa78502e547ea620e96"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-MediumItalic.ttf",
+      "sha1": "b1d0a7a04e0b02414e50a69d8c7c952e42abea20"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf",
+      "sha1": "03d9e7cd56b446b0585b36a46c3f4b140c6e0026"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-SemiBold.ttf",
+      "sha1": "1b8668d1e0f6949d9a702c2a590971ab7946a79f"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-SemiBoldItalic.ttf",
+      "sha1": "6d432d0456dfc9f59a091444b5aae82f35c3df2d"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-Thin.ttf",
+      "sha1": "629a4d348ac61e1ddabafc63683296ca7e1bfbe5"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/BeVietnamPro-ThinItalic.ttf",
+      "sha1": "6d7cc87fe54c683c66d0a791d82c4a10561488b8"
+    },
+    {
+      "path": "src/assets/fonts/Baloo_Paaji_2,Be_Vietnam_Pro,Bowlby_One,Bungee_Shade,Hanuman,etc/Be_Vietnam_Pro/OFL.txt",
+      "sha1": "6b5c0098a69e77c6b8b9d6ae587f43da9981d416"
+    }
+  ]
+}
