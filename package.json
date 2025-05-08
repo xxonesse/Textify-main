@@ -10,9 +10,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@10play/tentap-editor": "^0.7.0",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-camera-roll/camera-roll": "^7.10.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
+    "@react-native-ml-kit/text-recognition": "^1.5.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/native": "^7.0.14",

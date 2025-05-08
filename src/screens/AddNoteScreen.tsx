@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
 
 type Note = {
   title: string;
@@ -35,11 +38,18 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
   const noteIndex = route.params?.noteIndex;
 
   const [title, setTitle] = useState(note?.title || "");
-  const [content, setContent] = useState(note?.content || "");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleSave = () => {
-    if (!title.trim() || !content.trim()) {
+  const editor = useEditorBridge({
+    initialContent: note?.content || "<p></p>",
+    autofocus: true,
+    avoidIosKeyboard: true,
+  });
+
+  const handleSave = async () => {
+    const content = await editor.getHTML();
+
+    if (!title.trim() || !content?.trim()) {
       Alert.alert("Both fields are required!");
       return;
     }
@@ -62,57 +72,61 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.titleInput}
-        placeholder="Title"
-        placeholderTextColor="#888"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={styles.contentInput}
-        placeholder="Write your note here..."
-        placeholderTextColor="#888"
-        multiline
-        value={content}
-        onChangeText={setContent}
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={90}
+    >
+      <View style={styles.container}>
+        <TextInput
+          style={styles.titleInput}
+          placeholder="Title"
+          placeholderTextColor="#888"
+          value={title}
+          onChangeText={setTitle}
+        />
 
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
+        <View style={styles.editorContainer}>
+          <RichText editor={editor} style={{ flex: 1 }} />
+        </View>
 
-        {note && (
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => setIsModalVisible(true)}
-          >
-            <Text style={styles.buttonText}>Delete</Text>
+        <Toolbar editor={editor} />
+
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
-        )}
-      </View>
 
-      <Modal transparent visible={isModalVisible} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>Delete this note?</Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={confirmDelete}>
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
+          {note && (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => setIsModalVisible(true)}
+            >
+              <Text style={styles.buttonText}>Delete</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <Modal transparent visible={isModalVisible} animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>Delete this note?</Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={confirmDelete}>
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -126,16 +140,19 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     color: "#000",
   },
-  contentInput: {
+  editorContainer: {
     flex: 1,
-    fontSize: 16,
-    textAlignVertical: "top",
-    color: "#000",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 10,
+    overflow: "hidden",
+    padding: 10
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 10,
   },
   saveButton: {
     backgroundColor: "#080808",

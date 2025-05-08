@@ -9,6 +9,7 @@ import LogInPage from "./src/screens/LogInscreen";
 import SignInPage from "./src/screens/SignInscreen";
 
 import { loadModel } from "./modelLoader"; // 👈 add this line
+// import ResultScreen from "./src/screens/ResultScreen";
 
 type RootStackParamList = {
   SignInPage: undefined;
@@ -44,6 +45,7 @@ export default function App() {
         <Stack.Screen name="AddNote" component={AddNoteScreen} />
         <Stack.Screen name="Settings" component={Settingscreen} />
         <Stack.Screen name="Scanner" component={Scanner} />
+        {/* <Stack.Screen name="Result" component={ResultScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
