@@ -1,192 +1,186 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Modal,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type Note = {
   title: string;
   content: string;
+  createdAt: string;
+  index: number;
 };
 
 type RootStackParamList = {
+  Home: { userName: string } | undefined;
   AddNote: {
-    addNote: (title: string, content: string, index?: number) => void;
+    addNote?: (title: string, content: string, index?: number) => void;
     noteToEdit?: Note;
     noteIndex?: number;
-    deleteNote: (index: number) => void;
+    deleteNote?: (index: number) => void;
   };
+  Scanner: undefined;
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddNote">;
 
 const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { addNote, noteToEdit, noteIndex, deleteNote } = route.params;
+  const note = route.params?.noteToEdit;
+  const noteIndex = route.params?.noteIndex;
 
-  const [title, setTitle] = useState(noteToEdit?.title || "");
-  const [content, setContent] = useState(noteToEdit?.content || "");
+  const [title, setTitle] = useState(note?.title || "");
+  const [content, setContent] = useState(note?.content || "");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleDelete = () => {
-    setIsModalVisible(true); 
+  const handleSave = () => {
+    if (!title.trim() || !content.trim()) {
+      Alert.alert("Both fields are required!");
+      return;
+    }
+
+    if (route.params?.addNote) {
+      route.params.addNote(title, content, noteIndex);
+    } else {
+      Alert.alert("Note saving function is missing.");
+    }
+
+    navigation.goBack();
   };
 
   const confirmDelete = () => {
-    deleteNote(noteIndex!);
+    if (route.params?.deleteNote && typeof noteIndex === "number") {
+      route.params.deleteNote(noteIndex);
+    }
     navigation.goBack();
-    setIsModalVisible(false); 
-  };
-
-  const cancelDelete = () => {
-    setIsModalVisible(false); 
+    setIsModalVisible(false);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.titleContainer}>
-        <TextInput
-          style={styles.titleInput}
-          placeholder="Title"
-          placeholderTextColor="#888"
-          value={title}
-          onChangeText={setTitle}
-        />
-      </View>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.titleInput}
+        placeholder="Title"
+        placeholderTextColor="#888"
+        value={title}
+        onChangeText={setTitle}
+      />
       <TextInput
         style={styles.contentInput}
         placeholder="Write your note here..."
-        placeholderTextColor="#aaa"
+        placeholderTextColor="#888"
+        multiline
         value={content}
         onChangeText={setContent}
-        multiline
       />
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => {
-          addNote(title, content, noteIndex);
-          navigation.goBack();
-        }}
-      >
-        <Text style={styles.buttonText}>{noteToEdit ? "Update" : "Save"}</Text>
-      </TouchableOpacity>
-      {noteToEdit && (
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={handleDelete}
-        >
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
-      )}
 
-      {/* Custom Modal */}
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={cancelDelete}
-      >
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+
+        {note && (
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => setIsModalVisible(true)}
+          >
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <Modal transparent visible={isModalVisible} animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>Are you sure you want to delete this note?</Text>
+            <Text style={styles.modalText}>Delete this note?</Text>
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={cancelDelete}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setIsModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalButton} onPress={confirmDelete}>
-                <Text style={styles.modalButtonText}>Delete</Text>
+                <Text style={styles.buttonText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#000" },
-  titleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
   titleInput: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderColor: "#ccc",
-    paddingBottom: 5,
-    flex: 1,
-    color: "#fff",
+    color: "#000",
   },
   contentInput: {
-    fontSize: 20,
     flex: 1,
+    fontSize: 16,
     textAlignVertical: "top",
-    padding: 10,
-    backgroundColor: "#fff2",
+    color: "#000",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  saveButton: {
+    backgroundColor: "#080808",
+    padding: 15,
     borderRadius: 10,
-    marginBottom: 50,
-    color: "#fff"
+    flex: 1,
+    marginRight: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#d11a2a",
+    padding: 15,
+    borderRadius: 10,
+    flex: 1,
   },
   buttonText: {
     color: "#fff",
+    textAlign: "center",
     fontWeight: "bold",
   },
-  saveButton: {
-    position: "absolute",
-    top: 15,
-    right: 20,
-    backgroundColor: "#000",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  deleteButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: "#ff4d4d",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-
-  // Modal styles
   modalOverlay: {
     flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
   modalContainer: {
-    width: 300,
-    padding: 20,
     backgroundColor: "#fff",
+    padding: 20,
     borderRadius: 10,
-    alignItems: "center",
+    width: 280,
   },
   modalText: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: "center",
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+    justifyContent: "space-around",
   },
   modalButton: {
-    backgroundColor: "#000",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#080808",
+    minWidth: 100,
   },
 });
 

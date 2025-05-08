@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Alert, PermissionsAndroid, Platform, Imag
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import RNFS from 'react-native-fs';
-import { runOnnxModel, preprocessImage } from '../utils/onnxHelper'; // ✅ ONNX functions
 
 const Scanner = () => {
   const cameraRef = useRef<Camera>(null);
@@ -11,24 +10,28 @@ const Scanner = () => {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [detectedText, setDetectedText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
   const devices = useCameraDevices();
-  const device = devices.find((d) => d.position === 'back') ?? devices[0];
+  const device = devices.find(d => d.position === 'back'); // Find the back camera
 
   useEffect(() => {
-    (async () => {
+    const requestPermissions = async () => {
       let permissionGranted = false;
 
       if (Platform.OS === 'android') {
-        const cameraPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-        const storagePermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
-        permissionGranted = cameraPermission === PermissionsAndroid.RESULTS.GRANTED && storagePermission === PermissionsAndroid.RESULTS.GRANTED;
+        const cameraPermission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        permissionGranted = cameraPermission === PermissionsAndroid.RESULTS.GRANTED;
       } else {
         const status = await Camera.requestCameraPermission();
         permissionGranted = status === 'granted';
       }
 
       setHasPermission(permissionGranted);
-    })();
+    };
+
+    requestPermissions();
   }, []);
 
   const captureAndProcess = async () => {
@@ -36,46 +39,64 @@ const Scanner = () => {
 
     try {
       setLoading(true);
-      const photo = await cameraRef.current.takePhoto({});
+      const photo = await cameraRef.current.takePhoto();
       const filePath = `${RNFS.CachesDirectoryPath}/${Date.now()}.jpg`;
 
-      // Move file for processing
       await RNFS.moveFile(photo.path, filePath);
-      setImageUri(filePath); // Display captured image
+      setImageUri(filePath);
 
-      // Preprocess Image and Run ONNX Model
-      const inputTensor = await preprocessImage(filePath);
-      const text = await runOnnxModel(inputTensor);
-      setDetectedText(text ? text.join(" ") : "No text detected");
+      // ⛔ Removed TextRecognition — Placeholder instead:
+      setDetectedText('OCR not yet implemented');
 
-      // Optional: Save to Gallery
       await CameraRoll.save(filePath, { type: 'photo' });
     } catch (error) {
       Alert.alert('Error', 'Failed to process image.');
       console.error(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (!device) {
-    return <Text style={{ textAlign: 'center', marginTop: 20 }}>No camera found</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Loading camera...</Text>
+      </View>
+    );
   }
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      {hasPermission ? (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {!hasPermission ? (
+        <Text style={{ fontSize: 18, color: 'red' }}>No Camera Permission</Text>
+      ) : (
         <>
-          <Camera ref={cameraRef} style={{ width: "100%", height: "60%" }} device={device} isActive={true} photo={true} />
-          <TouchableOpacity onPress={captureAndProcess} style={{ marginTop: 20, backgroundColor: 'white', padding: 10, borderRadius: 10 }}>
-            <Text>Capture & Recognize</Text>
+          <Camera ref={cameraRef} style={{ width: '100%', height: '60%' }} device={device} isActive={true} photo={true} />
+
+          <TouchableOpacity
+            onPress={captureAndProcess}
+            style={{
+              marginTop: 20,
+              backgroundColor: 'white',
+              padding: 10,
+              borderRadius: 10,
+              elevation: 2,
+            }}
+          >
+            <Text style={{ fontSize: 16, color: 'black' }}>Capture</Text>
           </TouchableOpacity>
 
-          {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, marginTop: 10 }} />}
-          {detectedText && <Text style={{ marginTop: 10, fontSize: 16 }}>Detected Text: {detectedText}</Text>}
+          {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 10 }} />}
+          {imageUri && (
+            <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, marginTop: 10 }} />
+          )}
+          {detectedText && (
+            <Text style={{ marginTop: 10, fontSize: 16, color: 'black' }}>
+              {`Detected Text: ${detectedText}`}
+            </Text>
+          )}
         </>
-      ) : (
-        <Text>No Camera Permission</Text>
       )}
     </View>
   );

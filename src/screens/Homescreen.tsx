@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ProfilePicture from "../components/profilepicture";
 import NotesList from "../components/NotesList";
-import Scanner from "./Scanner";
 
 // Define the Note type
 type Note = {
@@ -142,6 +141,7 @@ const Homescreen: React.FC<Props> = ({ navigation, route }) => {
       <TouchableOpacity style={styles.floatingButton} onPress={() => navigation.navigate("AddNote", { addNote, deleteNote })}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
+
 
       {/* Confirmation Delete Modal */}
       <Modal
