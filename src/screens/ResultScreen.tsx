@@ -1,6 +1,6 @@
 // src/screens/ResultScreen.tsx
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../App'; // Adjust the path as needed
 
@@ -11,7 +11,7 @@ const ResultScreen = () => {
   const { imageUri, detectedText } = route.params;
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Detected Text:</Text>
       <Text style={styles.text}>{detectedText}</Text>
       {imageUri && (
@@ -20,12 +20,12 @@ const ResultScreen = () => {
           <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
         </>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { flexGrow: 1, padding: 20 },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
   text: { fontSize: 16, marginBottom: 20 },
   image: { width: '100%', height: 300, borderRadius: 10 },
