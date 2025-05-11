@@ -31,6 +31,7 @@
     "react-native-canvas": "^0.1.40",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.23.0",
+    "react-native-ml-kit": "^0.0.1",
     "react-native-pell-rich-editor": "^1.9.0",
     "react-native-permissions": "^5.2.6",
     "react-native-reanimated": "^3.16.7",
