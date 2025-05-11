@@ -1,41 +1,34 @@
-import React from "react";
-import { Text, StyleSheet, ScrollView } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+// src/screens/ResultScreen.tsx
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../App'; // Adjust the import path if needed
 
-type RootStackParamList = {
-  ResultScreen: { text: string };
-};
+type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
 
-type ResultScreenRouteProp = RouteProp<RootStackParamList, "ResultScreen">;
-
-type Props = {
-  route: ResultScreenRouteProp;
-};
-
-export default function ResultScreen({ route }: Props) {
-  const { text } = route.params;
+const ResultScreen = () => {
+  const route = useRoute<ResultScreenRouteProp>();
+  const { imageUri, detectedText } = route.params;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Recognized Text</Text>
-      <Text selectable style={styles.result}>{text}</Text>
-    </ScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Detected Text:</Text>
+      <Text style={styles.text}>{detectedText}</Text>
+      {imageUri && (
+        <>
+          <Text style={styles.title}>Captured Image:</Text>
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
+        </>
+      )}
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flexGrow: 1,
-    backgroundColor: "#fff"
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10
-  },
-  result: {
-    fontSize: 16,
-    lineHeight: 22
-  }
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  text: { fontSize: 16, marginBottom: 20 },
+  image: { width: 200, height: 200, marginBottom: 20 },
 });
+
+export default ResultScreen;

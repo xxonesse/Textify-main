@@ -1,3 +1,4 @@
+// App.tsx
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -7,17 +8,17 @@ import Settingscreen from "./src/screens/Settingscreen";
 import Scanner from "./src/screens/Scanner";
 import LogInPage from "./src/screens/LogInscreen";
 import SignInPage from "./src/screens/SignInscreen";
-
-import { loadModel } from "./modelLoader"; // 👈 add this line
 import ResultScreen from "./src/screens/ResultScreen";
+import { loadModel } from "./modelLoader";
 
-type RootStackParamList = {
+export type RootStackParamList = {
   SignInPage: undefined;
   LogInPage: undefined;
   Home: undefined;
   AddNote: undefined;
   Settings: undefined;
   Scanner: undefined;
+  Result: { imageUri: string; detectedText: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,7 +35,6 @@ export default function App() {
     };
     init();
   }, []);
-  
 
   return (
     <NavigationContainer>
