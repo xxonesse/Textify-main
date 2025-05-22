@@ -2,7 +2,7 @@ import * as ort from "onnxruntime-react-native";
 import { Platform } from "react-native";
 import RNFS from "react-native-fs";
 
-// 1️⃣ Model Initialization & Path Handling --------------------------------
+//Model Initialization & Path Handling
 const copyModelToInternalStorage = async (): Promise<string> => {
   const modelAssetPath = "model.onnx";
   const targetDir = `${RNFS.DocumentDirectoryPath}/models`;
@@ -23,7 +23,7 @@ const copyModelToInternalStorage = async (): Promise<string> => {
 const getModelPath = async (): Promise<string> => {
   return Platform.OS === "android"
     ? await copyModelToInternalStorage()
-    : "model.onnx"; // iOS or fallback
+    : "model.onnx";
 };
 
 export const initializeModel = async (): Promise<void> => {
@@ -35,15 +35,13 @@ export const initializeModel = async (): Promise<void> => {
   }
 };
 
-// 2️⃣ Image Preprocessing -------------------------------------------------
-// Replace this with real image-to-tensor logic
+//Image Preprocessing
 export const preprocessImage = async (imagePath: string): Promise<ort.Tensor> => {
-  // Dummy image tensor: [1, 32, 128, 3]
-  const dummyData = new Float32Array(1 * 32 * 128 * 3).fill(0.5); // normalized RGB
+  const dummyData = new Float32Array(1 * 32 * 128 * 3).fill(0.5);
   return new ort.Tensor("float32", dummyData, [1, 32, 128, 3]);
 };
 
-// 3️⃣ Output Decoding -----------------------------------------------------
+//Output Decoding
 const vocab = "z9k5ijq.EOTPr_LcFDyumotYKO-QJjd:BmPb8lMMH14s6'g7U11a3)pwcVHWGF\"GZvaxdh(szc";
 
 const decodeOutput = (modelOutput: number[][][]): string => {
@@ -51,7 +49,7 @@ const decodeOutput = (modelOutput: number[][][]): string => {
   const [batchSize, seqLength] = [modelOutput.length, modelOutput[0].length];
 
   for (let s = 0; s < seqLength; s++) {
-    const logits = modelOutput[0][s]; // Assume batch size = 1
+    const logits = modelOutput[0][s];
     const charIdx = logits.indexOf(Math.max(...logits));
     text += vocab[charIdx] || "";
   }
@@ -59,7 +57,7 @@ const decodeOutput = (modelOutput: number[][][]): string => {
   return text.replace(/EOT.*/g, "").replace(/\s+/g, " ").trim();
 };
 
-// 4️⃣ Inference Function --------------------------------------------------
+//Inference Function
 export const runOnnxModel = async (inputTensor: ort.Tensor): Promise<string | null> => {
   try {
     const modelPath = await getModelPath();
