@@ -98,23 +98,28 @@ const Homescreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.textifyname}>textify</Text>
         </View>
         <View style={styles.profile}>
-          <Text style={styles.greet}>morning, {userName}!</Text>
+          <Text style={styles.greet}>Good day, {userName}!</Text>
           <ProfilePicture imageSource={require("../assets/profilepicture.png")} />
         </View>
       </View>
 
       <Text style={styles.myNotes}>My Notes <Text style={styles.notesCount}>/{String(notes.length).padStart(2, "0")}</Text></Text>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search"
-          placeholderTextColor="black"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Image source={require("../assets/settingBtn.png")} style={styles.settings} />
-        <Image source={require("../assets/lightmode.png")} style={styles.themeMode} />
+      <View style={styles.searchGroup}>
+        <View style={styles.searchContainer}>
+          <Image source={require("../assets/searchBtn.png")} style={styles.searchbtn} />
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search"
+            placeholderTextColor="#F1E9B2"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+        <View style={styles.themeNsettings}>
+          <Image source={require("../assets/settingBtn.png")} style={styles.settings} />
+          <Image source={require("../assets/lightmode.png")} style={styles.themeMode} />
+        </View>
       </View>
 
       <ScrollView>
@@ -134,14 +139,15 @@ const Homescreen: React.FC<Props> = ({ navigation, route }) => {
         )}
       </ScrollView>
  
-      <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("Scanner")}>
-        <Image source={require("../assets/scanner.png")} style={styles.scanner} />
-      </TouchableOpacity>
-
+    <View style={styles.navBttns}>
       <TouchableOpacity style={styles.floatingButton} onPress={() => navigation.navigate("AddNote", { addNote, deleteNote })}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("Scanner")}>
+        <Image source={require("../assets/scanner.png")} style={styles.scanner} />
+      </TouchableOpacity>
+    </View>
 
       {/* Confirmation Delete Modal */}
       <Modal
@@ -172,7 +178,7 @@ const styles = StyleSheet.create({
   home: { 
     flex: 1, 
     padding: 20, 
-    backgroundColor: "#fff" 
+    backgroundColor: "#F1E9B2" 
   },
   section1: { 
     flexDirection: "row", 
@@ -212,17 +218,32 @@ const styles = StyleSheet.create({
   searchContainer: { 
     flexDirection: "row", 
     alignItems: "center", 
-    backgroundColor: "#000", 
-    padding: 10, borderRadius: 20, 
-    marginBottom: 10 
+    padding: 3, 
+    paddingLeft: 10,
+    width: "80%",
+    borderRadius: 20, 
+    marginBottom: 10,
+    backgroundColor: "#161616", 
+
   },
   searchBar: { 
     flex: 1, 
-    height: 40, 
-    color: "#000", 
+    height: 50, 
+    color: "#F1E9B2", 
     paddingHorizontal: 10, 
-    backgroundColor: "white", 
-    borderRadius: 10 
+    borderRadius: 15 
+  },
+  searchbtn: {
+    height: 20,
+    width: 20,
+    marginLeft: 10,
+  },
+  searchGroup: {
+    flexDirection: "row",
+  },
+  themeNsettings: {
+    flexDirection: "row",
+    marginTop: 15
   },
   settings: { 
     width: 22, 
@@ -231,8 +252,8 @@ const styles = StyleSheet.create({
     marginLeft: 10 
   },
   themeMode: { 
-    width: 15, 
-    height: 15, 
+    width: 25, 
+    height: 25, 
     resizeMode: "contain", 
     marginLeft: 10 
   },
@@ -242,25 +263,46 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     color: "gray" 
   },
+  navBttns: {
+    flexDirection: "row",
+    gap: 30,
+    backgroundColor: "#000",
+    borderRadius: 50,
+    margin: "auto",
+    justifyContent: "center",
+    width: 150,
+    height: 70,
+    paddingTop: 10
+  },
   floatingButton: { 
-    position: "absolute", 
-    bottom: 30, 
-    right: 20, 
-    backgroundColor: "#080808", 
-    width: 60, height: 60, 
+    // position: "absolute", 
+    // bottom: 30, 
+    backgroundColor: "#F1E9B2", 
+    width: 50, 
+    height: 50, 
     borderRadius: 30, 
     justifyContent: "center", 
     alignItems: "center", 
-    shadowColor: "#000", 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.3, 
-    shadowRadius: 4 
   },
   floatingButtonText: { 
-    fontSize: 30, 
-    color: "white", 
+    fontSize: 40, 
+    color: "#000", 
     fontWeight: "bold" 
   },
+  scanButton: { 
+    // position: "absolute", 
+    // bottom: 100, 
+    // right: 26, 
+    height: 50,
+    width: 50,
+    backgroundColor: "#F1E9B2", 
+    borderRadius: 30 
+  },
+  scanner: { 
+    margin: "auto",
+    height: 35,
+    width: 35,
+ },
 
   // Modal styles
   modalOverlay: { 
@@ -293,17 +335,6 @@ const styles = StyleSheet.create({
     color: "white", 
     textAlign: "center" 
   },
-  scanButton: { 
-    position: "absolute", 
-    bottom: 100, 
-    right: 26, 
-    backgroundColor: "#000", 
-    padding: 15, 
-    borderRadius: 30 },
-  scanner: { 
-    height: 20,
-    width: 20,
- },
 });
 
 export default Homescreen;

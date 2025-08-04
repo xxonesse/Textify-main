@@ -15,7 +15,7 @@ export type RootStackParamList = {
   SignInPage: undefined;
   LogInPage: undefined;
   Home: undefined;
-  AddNote: undefined;
+  AddNote: { initialText?: string };
   Settings: undefined;
   Scanner: undefined;
   Result: { imageUri: string; detectedText: string };

@@ -27,12 +27,13 @@ export default function SignInPage({ navigation }: Props) {
     <View style={styles.container}>
       <View>
         <Image source={require("../assets/textify_logo.png")} style={styles.logo} />
-        <Text style={styles.appTitle}>Textify</Text>
+        <Text style={styles.appTitle}>Texant</Text>
       </View>
       <View style={styles.input}>
         {/* Username */}
         <TextInput
           placeholder="Username"
+          placeholderTextColor="#323232"
           style={styles.textInput}
           value={name}
           onChangeText={setName}
@@ -41,6 +42,7 @@ export default function SignInPage({ navigation }: Props) {
         {/* E-mail */}
         <TextInput
           placeholder="E-mail"
+          placeholderTextColor="#323232"
           style={styles.textInput}
           keyboardType="email-address"
           value={email}
@@ -49,6 +51,16 @@ export default function SignInPage({ navigation }: Props) {
         {/* Set Password */}
         <TextInput
           placeholder="Password"
+          placeholderTextColor="#323232"
+          style={styles.passwordInput}
+          secureTextEntry = {true}
+          value={password}
+          onChangeText={setPassword}
+          maxLength={30}
+        />
+          <TextInput
+          placeholder="Confirm Password"
+          placeholderTextColor="#323232"
           style={styles.passwordInput}
           secureTextEntry = {true}
           value={password}
@@ -57,7 +69,7 @@ export default function SignInPage({ navigation }: Props) {
         />
         <Text style={styles.forgotPass}>Forgot Password?</Text>
         <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueText}>Sign In</Text>
+          <Text style={styles.continueText}>Register</Text>
         </TouchableOpacity>
 
         <Text>Already have an account?</Text>
@@ -72,6 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F1E9B2"
   },
   logo: {
     marginTop: -10,
@@ -99,11 +112,11 @@ const styles = StyleSheet.create({
   textInput: {
     padding: 10,
     marginTop: 5,
-    backgroundColor: "#0008",
+    backgroundColor: "#F1E9B2",
     borderColor: "#000",
     borderWidth: 2,
     borderRadius: 10,
-    color: "#000",
+    color: "#323232",
     width: "80%",
     height: 50,
     fontSize: 18,
@@ -111,11 +124,11 @@ const styles = StyleSheet.create({
   passwordInput: {
     padding: 10,
     marginTop: 5,
-    backgroundColor: "#0008",
+    backgroundColor: "#F1E9B2",
     borderColor: "#000",
     borderWidth: 2,
     borderRadius: 10,
-    color: "#000",
+    color: "#323232",
     width: "80%",
     height: 50,
     fontSize: 18,
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
     width: "70%"
   },
   continueText: {
-    color: "#fff",
+    color: "#F1E9B2",
     fontSize: 16,
     fontWeight: "700",
     textAlign: "center"

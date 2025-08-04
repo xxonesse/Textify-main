@@ -47,7 +47,8 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
   });
 
   const handleSave = async () => {
-    const content = await editor.getHTML();
+    // Get the plain text content instead of HTML
+    const content = await editor.getText();
 
     if (!title.trim() || !content?.trim()) {
       Alert.alert("Both fields are required!");
@@ -81,13 +82,13 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
         <TextInput
           style={styles.titleInput}
           placeholder="Title"
-          placeholderTextColor="#888"
+          placeholderTextColor="#080808"
           value={title}
           onChangeText={setTitle}
         />
 
         <View style={styles.editorContainer}>
-          <RichText editor={editor} style={{ flex: 1 }} />
+          <RichText editor={editor} style={{ flex: 1, backgroundColor: "#F1E9B2" }} />
         </View>
 
         <Toolbar editor={editor} />
@@ -131,19 +132,20 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 20, backgroundColor: "#F1E9B2" },
   titleInput: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
     borderBottomWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#080808",
     color: "#000",
   },
   editorContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#F1E9B2",
+    backgroundColor: "#F1E9B2",
     borderRadius: 8,
     marginBottom: 10,
     overflow: "hidden",
