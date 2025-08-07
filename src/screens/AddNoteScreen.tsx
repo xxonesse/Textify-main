@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
+import { checkAndCorrectGrammar } from "../utils/sapling"; // Grammar correction
 
 type Note = {
   title: string;
@@ -46,22 +47,48 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
     avoidIosKeyboard: true,
   });
 
-  const handleSave = async () => {
-    // Get the plain text content instead of HTML
-    const content = await editor.getText();
+  // Check grammar button handler
+  const handleCheckGrammar = async () => {
+    const rawContent = await editor.getText();
 
-    if (!title.trim() || !content?.trim()) {
+    if (!rawContent?.trim()) {
+      Alert.alert("Note content is empty!");
+      return;
+    }
+
+    try {
+      const correctedContent = await checkAndCorrectGrammar(rawContent);
+      editor.setContent(correctedContent);
+      Alert.alert("Grammar checked and corrected!");
+    } catch (err) {
+      console.error("Grammar check error:", err);
+      Alert.alert("Failed to check grammar.");
+    }
+  };
+
+  // Save button handler
+  const handleSave = async () => {
+    const rawContent = await editor.getText();
+
+    if (!title.trim() || !rawContent?.trim()) {
       Alert.alert("Both fields are required!");
       return;
     }
 
-    if (route.params?.addNote) {
-      route.params.addNote(title, content, noteIndex);
-    } else {
-      Alert.alert("Note saving function is missing.");
-    }
+    try {
+      const correctedContent = await checkAndCorrectGrammar(rawContent);
 
-    navigation.goBack();
+      if (route.params?.addNote) {
+        route.params.addNote(title, correctedContent, noteIndex);
+      } else {
+        Alert.alert("Note saving function is missing.");
+      }
+
+      navigation.goBack();
+    } catch (err) {
+      console.error("Error correcting grammar:", err);
+      Alert.alert("An error occurred while checking grammar.");
+    }
   };
 
   const confirmDelete = () => {
@@ -94,6 +121,10 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
         <Toolbar editor={editor} />
 
         <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.checkButton} onPress={handleCheckGrammar}>
+            <Text style={styles.buttonText}>Check Grammar</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
@@ -149,25 +180,33 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     overflow: "hidden",
-    padding: 10
+    padding: 10,
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
   },
+  checkButton: {
+    backgroundColor: "#357ABD",
+    padding: 15,
+    borderRadius: 10,
+    flex: 1,
+    marginRight: 5,
+  },
   saveButton: {
     backgroundColor: "#080808",
     padding: 15,
     borderRadius: 10,
     flex: 1,
-    marginRight: 10,
+    marginHorizontal: 5,
   },
   deleteButton: {
     backgroundColor: "#d11a2a",
     padding: 15,
     borderRadius: 10,
     flex: 1,
+    marginLeft: 5,
   },
   buttonText: {
     color: "#fff",
