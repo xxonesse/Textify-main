@@ -13,6 +13,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
 import { checkAndCorrectGrammar } from "../utils/sapling"; // Grammar correction
+import Tts from "react-native-tts"; // Text-to-speech library
 
 type Note = {
   title: string;
@@ -91,6 +92,22 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  // TTS function
+  const handleTextToSpeech = async () => {
+    const rawContent = await editor.getText();
+    if (!rawContent?.trim()) {
+      Alert.alert("Note is empty!", "There's no content to read.");
+      return;
+    }
+
+    try {
+      await Tts.speak(rawContent);
+    } catch (error) {
+      console.error("Text-to-speech error:", error);
+      Alert.alert("Error", "Failed to convert text to speech.");
+    }
+  };
+
   const confirmDelete = () => {
     if (route.params?.deleteNote && typeof noteIndex === "number") {
       route.params.deleteNote(noteIndex);
@@ -119,6 +136,12 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
 
         <Toolbar editor={editor} />
+        
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.audioButton} onPress={handleTextToSpeech}>
+            <Text style={styles.buttonText}>Read Note</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.checkButton} onPress={handleCheckGrammar}>
@@ -207,6 +230,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flex: 1,
     marginLeft: 5,
+  },
+  audioButton: {
+    backgroundColor: "#FF5722",
+    padding: 15,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 5,
   },
   buttonText: {
     color: "#fff",
