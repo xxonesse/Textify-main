@@ -9,6 +9,7 @@ import {
     Modal,
     KeyboardAvoidingView,
     Platform,
+    Image,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
@@ -166,25 +167,27 @@ const AddNoteScreen: React.FC<Props> = ({ navigation, route }) => {
 
                 <Toolbar editor={editor} />
                 
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity style={styles.audioButton} onPress={handleTextToSpeech}>
-                        <Text style={styles.buttonText}>Read Note</Text>
+                <View style={styles.lowerbtn}>
+                    <TouchableOpacity onPress={handleTextToSpeech}>
+                        <Image 
+                            source={require('../assets/read_note.png')}/>
                     </TouchableOpacity>
                     
-                    <TouchableOpacity style={styles.pdfButton} onPress={handleGeneratePdf}>
-                        <Text style={styles.buttonText}>Create PDF</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity style={styles.checkButton} onPress={handleCheckGrammar}>
-                        <Text style={styles.buttonText}>Check Grammar</Text>
+                    <TouchableOpacity onPress={handleGeneratePdf}>
+                        <Image 
+                            source={require('../assets/pdf_save.png')}/>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <Text style={styles.buttonText}>Save</Text>
+                    <TouchableOpacity onPress={handleCheckGrammar}>
+                        <Image 
+                            source={require('../assets/grammar_check.png')}/>
                     </TouchableOpacity>
 
+                    <TouchableOpacity onPress={handleSave}>
+                        <Image 
+                            source={require('../assets/save_note.png')}/>
+                    </TouchableOpacity>
+                
                     {note && (
                         <TouchableOpacity
                             style={styles.deleteButton}
@@ -250,33 +253,16 @@ const styles = StyleSheet.create({
         flex: 1,
         marginRight: 5,
     },
-    saveButton: {
-        backgroundColor: "#080808",
-        padding: 15,
-        borderRadius: 10,
-        flex: 1,
-        marginHorizontal: 5,
-    },
-    deleteButton: {
-        backgroundColor: "#d11a2a",
-        padding: 15,
-        borderRadius: 10,
-        flex: 1,
-        marginLeft: 5,
-    },
-    audioButton: {
-        backgroundColor: "#FF5722",
-        padding: 15,
-        borderRadius: 10,
-        flex: 1,
-        marginRight: 5,
-    },
-    pdfButton: {
-        backgroundColor: '#00BFFF',
-        padding: 15,
-        borderRadius: 10,
-        flex: 1,
-        marginLeft: 5,
+    lowerbtn: {
+        justifyContent: "center",
+        margin: "auto",
+        borderRadius: 50,
+        display: "flex",
+        flexDirection: "row",
+        gap: 15,
+        backgroundColor: "#000",
+        padding: 10,
+        width: 270,
     },
     buttonText: {
         color: "#fff",

@@ -7,7 +7,6 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
-  Image,
   ActivityIndicator,
   Linking,
   StyleSheet
@@ -18,8 +17,8 @@ import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App'; // Make sure this matches your navigation setup
-import { recognizeTextFromImage } from '../utils/mlkit';
+import { RootStackParamList } from '../../App';
+import { loadModel, runModelOnImage } from '../utils/tflite';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Scanner'>;
 
@@ -27,10 +26,10 @@ const Scanner = () => {
   const cameraRef = useRef<Camera>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [modelLoaded, setModelLoaded] = useState(false);
   const [flashMode, setFlashMode] = useState<'off' | 'on'>('off');
 
   const navigation = useNavigation<NavigationProp>();
-
   const devices = useCameraDevices();
   const device = devices.find((d) => d.position === 'back');
 
@@ -71,58 +70,74 @@ const Scanner = () => {
     requestPermissions();
   }, []);
 
+  useEffect(() => {
+    const loadTfliteModel = async () => {
+      console.log('Attempting to load TFLite model...');
+      try {
+        await loadModel();
+        setModelLoaded(true);
+        console.log('TFLite model loaded successfully!');
+      } catch (e) {
+        console.error('Failed to load TFLite model:', e);
+        Alert.alert('Model Error', 'Failed to load the OCR model. Please restart the app.');
+      }
+    };
+
+    loadTfliteModel();
+  }, []);
+
   const captureAndProcess = useCallback(async () => {
-    if (!cameraRef.current || !device || !hasPermission) {
-      Alert.alert('Error', 'Camera not ready or permissions not granted');
+    if (!cameraRef.current || !device || !hasPermission || !modelLoaded) {
+      Alert.alert('Error', 'Camera, permissions, or model not ready.');
       return;
     }
 
     try {
       setLoading(true);
-
       const photo = await cameraRef.current.takePhoto({ flash: flashMode });
       const timestamp = Date.now();
       const newPath = `${RNFS.TemporaryDirectoryPath}/${timestamp}.jpg`;
-
       await RNFS.moveFile(photo.path, newPath);
-      const exists = await RNFS.exists(newPath);
-      if (!exists) throw new Error('Image file does not exist.');
-
-      const uri = Platform.OS === 'android' ? `file://${newPath}` : newPath;
-
-      const text = await recognizeTextFromImage(uri);
 
       try {
         await CameraRoll.save(newPath, { type: 'photo' });
       } catch (saveError) {
         console.warn('CameraRoll save error:', saveError);
       }
+      
+      const uri = Platform.OS === 'android' ? `file://${newPath}` : newPath;
+      const modelResults = await runModelOnImage(uri);
+      
+      let detectedText = 'No text found.';
+      if (modelResults && modelResults.length > 0) {
+        detectedText = JSON.stringify(modelResults[0]); 
+      }
 
       navigation.navigate('Result', {
         imageUri: uri,
-        detectedText: text || 'No text found.',
+        detectedText: detectedText,
       });
 
     } catch (error) {
       console.error('Capture/Process error:', error);
-      Alert.alert('Error', 'Failed to process image.', [
+      Alert.alert('Error', 'Failed to process image with TFLite.', [
         { text: 'OK' },
         { text: 'Retry', onPress: captureAndProcess }
       ]);
     } finally {
       setLoading(false);
     }
-  }, [device, hasPermission, flashMode, navigation]);
+  }, [device, hasPermission, modelLoaded, flashMode, navigation]);
 
-  const toggleFlash = () => {
+  const toggleFlash = useCallback(() => {
     setFlashMode(prev => (prev === 'on' ? 'off' : 'on'));
-  };
+  }, []);
 
-  if (!device) {
+  if (!device || !modelLoaded) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" />
-        <Text style={styles.loadingText}>Loading camera...</Text>
+        <Text style={styles.loadingText}>Loading camera and model...</Text>
       </View>
     );
   }

@@ -40,6 +40,7 @@
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.6.0",
     "react-native-share": "^12.2.0",
+    "react-native-tflite": "^0.0.2",
     "react-native-tts": "^4.1.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-view-shot": "^4.0.3",
