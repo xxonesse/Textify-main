@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Homescreen from "./src/screens/Homescreen";
@@ -9,7 +9,6 @@ import Scanner from "./src/screens/Scanner";
 import LogInPage from "./src/screens/LogInscreen";
 import SignInPage from "./src/screens/SignInscreen";
 import ResultScreen from "./src/screens/ResultScreen";
-import { loadModel } from "./modelLoader";
 
 export type RootStackParamList = {
   SignInPage: undefined;
@@ -24,21 +23,12 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const session = await loadModel();
-        console.log("Session loaded:", session);
-      } catch (err) {
-        console.error("Failed to load ONNX model:", err);
-      }
-    };
-    init();
-  }, []);
-
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="SignInPage">
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="SignInPage"
+      >
         <Stack.Screen name="SignInPage" component={SignInPage} />
         <Stack.Screen name="LogInPage" component={LogInPage} />
         <Stack.Screen name="Home" component={Homescreen} />

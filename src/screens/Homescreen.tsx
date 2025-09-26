@@ -16,12 +16,12 @@ type Note = {
 
 // Define navigation props
 type RootStackParamList = {
-  Home: { userName: string } | undefined;
+  Home: { userName?: string };
   AddNote: {
-    addNote: (title: string, content: string, index?: number) => void;
+    addNote?: (title: string, content: string, index?: number) => void;
     noteToEdit?: Note;
     noteIndex?: number;
-    deleteNote: (index: number) => void;
+    deleteNote?: (index: number) => void;
   };
   Scanner: undefined;
 };

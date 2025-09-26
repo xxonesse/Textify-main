@@ -1,13 +1,24 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import LogIn from "../screens/LogInscreen";
+import { registerUser } from "../services/ocrServices"; // centralized API service
 
-// Define navigation props
 type RootStackParamList = {
   SignInPage: undefined;
   Home: { userName: string };
-  LogIn: undefined;
+  LogInPage: undefined; // ✅ fixed to match App.tsx
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignInPage">;
@@ -16,75 +27,123 @@ export default function SignInPage({ navigation }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleContinue = () => {
-    if (name.trim()) {
+  const validateEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
+
+  const handleRegister = async () => {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await registerUser(name, email, password); // auto-login included
       navigation.navigate("Home", { userName: name });
+    } catch (err: any) {
+      console.error("Registration/Login failed:", err.response?.data || err.message);
+
+      const message =
+        err.response?.data?.username?.[0] ||
+        err.response?.data?.email?.[0] ||
+        err.response?.data?.password?.[0] ||
+        "Unable to register. Try a different username or email.";
+      Alert.alert("Registration Failed", message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Image source={require("../assets/textify_logo.png")} style={styles.logo} />
-        <Text style={styles.appTitle}>Texant</Text>
-      </View>
-      <View style={styles.input}>
-        {/* Username */}
-        <TextInput
-          placeholder="Username"
-          placeholderTextColor="#323232"
-          style={styles.textInput}
-          value={name}
-          onChangeText={setName}
-          maxLength={20}
-        />
-        {/* E-mail */}
-        <TextInput
-          placeholder="E-mail"
-          placeholderTextColor="#323232"
-          style={styles.textInput}
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        {/* Set Password */}
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#323232"
-          style={styles.passwordInput}
-          secureTextEntry = {true}
-          value={password}
-          onChangeText={setPassword}
-          maxLength={30}
-        />
-          <TextInput
-          placeholder="Confirm Password"
-          placeholderTextColor="#323232"
-          style={styles.passwordInput}
-          secureTextEntry = {true}
-          value={password}
-          onChangeText={setPassword}
-          maxLength={30}
-        />
-        <Text style={styles.forgotPass}>Forgot Password?</Text>
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueText}>Register</Text>
-        </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View>
+          <Image source={require("../assets/textify_logo.png")} style={styles.logo} />
+          <Text style={styles.appTitle}>Texant</Text>
+        </View>
 
-        <Text>Already have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("LogIn")}> <Text style={styles.login}>Log In</Text></TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.input}>
+          <TextInput
+            placeholder="Username"
+            placeholderTextColor="#323232"
+            style={styles.textInput}
+            value={name}
+            onChangeText={setName}
+            maxLength={20}
+          />
+          <TextInput
+            placeholder="E-mail"
+            placeholderTextColor="#323232"
+            style={styles.textInput}
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor="#323232"
+            style={styles.passwordInput}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            maxLength={30}
+          />
+          <TextInput
+            placeholder="Confirm Password"
+            placeholderTextColor="#323232"
+            style={styles.passwordInput}
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            maxLength={30}
+          />
+
+          <Text style={styles.forgotPass}>Forgot Password?</Text>
+
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#F1E9B2" />
+            ) : (
+              <Text style={styles.continueText}>Register</Text>
+            )}
+          </TouchableOpacity>
+
+          <Text style={{ marginTop: 10 }}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("LogInPage")}>
+            <Text style={styles.login}>Log In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F1E9B2"
+    backgroundColor: "#F1E9B2",
+    paddingVertical: 20,
   },
   logo: {
     marginTop: -10,
@@ -93,7 +152,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   appTitle: {
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontFamily: "BeVietnamPro-Black",
     marginTop: 27,
     textAlign: "center",
@@ -101,13 +160,9 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   input: {
-    marginTop: "20%",
+    marginTop: 30,
     alignItems: "center",
     width: "100%",
-  },
-  enterName: {
-    fontSize: 15,
-    fontWeight: "700",
   },
   textInput: {
     padding: 10,
@@ -139,18 +194,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    width: "70%"
+    width: "70%",
+    alignItems: "center",
   },
   continueText: {
     color: "#F1E9B2",
     fontSize: 16,
     fontWeight: "700",
-    textAlign: "center"
+    textAlign: "center",
   },
   forgotPass: {
     marginLeft: 200,
+    marginTop: 5,
   },
   login: {
-    color: "#000"
+    color: "#000",
+    marginTop: 5,
   },
 });

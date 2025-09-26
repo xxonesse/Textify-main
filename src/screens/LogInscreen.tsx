@@ -1,10 +1,23 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { loginUser } from "../services/ocrServices"; // centralized API service
 
-// Define navigation props
 type RootStackParamList = {
   LogInPage: undefined;
+  SignInPage: undefined;
   Home: { userName: string };
 };
 
@@ -13,55 +26,84 @@ type Props = NativeStackScreenProps<RootStackParamList, "LogInPage">;
 export default function LogIn({ navigation }: Props) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleContinue = () => {
-    if (name.trim()) {
-      navigation.navigate("Home", { userName: name });
+  const handleLogin = async () => {
+    if (!name.trim() || !password) {
+      Alert.alert("Error", "Please enter both username and password");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await loginUser(name, password); // uses centralized API service
+      navigation.navigate("Home", { userName: name }); // matches App.tsx
+    } catch (err: any) {
+      console.error("Login failed:", err.response?.data || err.message);
+      const message = err.response?.data?.detail || "Invalid username or password";
+      Alert.alert("Login Failed", message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Image source={require("../assets/textify_logo.png")} style={styles.logo} />
-        <Text style={styles.appTitle}>Textify</Text>
-      </View>
-      <View style={styles.input}>
-        {/* Username */}
-        <TextInput
-          placeholder="Username"
-          style={styles.textInput}
-          value={name}
-          onChangeText={setName}
-          maxLength={20}
-        />
-        {/* Set Password */}
-        <TextInput
-          placeholder="Password"
-          style={styles.passwordInput}
-          secureTextEntry = {true}
-          value={password}
-          onChangeText={setPassword}
-          maxLength={30}
-        />
-        <Text style={styles.forgotPass}>Forgot Password?</Text>
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueText}>Log In</Text>
-        </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View>
+          <Image source={require("../assets/textify_logo.png")} style={styles.logo} />
+          <Text style={styles.appTitle}>Texant</Text>
+        </View>
 
-        <Text style={styles.signIn}>Don't have an account? Sign In</Text>
-      </View>
-    </View>
+        <View style={styles.input}>
+          <TextInput
+            placeholder="Username"
+            style={styles.textInput}
+            value={name}
+            onChangeText={setName}
+            maxLength={20}
+          />
+          <TextInput
+            placeholder="Password"
+            style={styles.passwordInput}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            maxLength={30}
+          />
+          <Text style={styles.forgotPass}>Forgot Password?</Text>
+
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#F1E9B2" />
+            ) : (
+              <Text style={styles.continueText}>Log In</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate("SignInPage")}>
+            <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F1E9B2",
+    paddingVertical: 20,
   },
   logo: {
     marginTop: -10,
@@ -70,7 +112,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   appTitle: {
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontFamily: "BeVietnamPro-Black",
     marginTop: 27,
     textAlign: "center",
@@ -78,22 +120,18 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   input: {
-    marginTop: "20%",
+    marginTop: 30,
     alignItems: "center",
     width: "100%",
-  },
-  enterName: {
-    fontSize: 15,
-    fontWeight: "700",
   },
   textInput: {
     padding: 10,
     marginTop: 5,
-    backgroundColor: "#fff",
+    backgroundColor: "#F1E9B2",
     borderColor: "#000",
     borderWidth: 2,
     borderRadius: 10,
-    color: "#000",
+    color: "#323232",
     width: "80%",
     height: 50,
     fontSize: 18,
@@ -101,11 +139,11 @@ const styles = StyleSheet.create({
   passwordInput: {
     padding: 10,
     marginTop: 5,
-    backgroundColor: "#fff",
+    backgroundColor: "#F1E9B2",
     borderColor: "#000",
     borderWidth: 2,
     borderRadius: 10,
-    color: "#000",
+    color: "#323232",
     width: "80%",
     height: 50,
     fontSize: 18,
@@ -116,18 +154,23 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    width: "70%"
+    width: "70%",
+    alignItems: "center",
   },
   continueText: {
-    color: "#fff",
+    color: "#F1E9B2",
     fontSize: 16,
     fontWeight: "700",
-    textAlign: "center"
+    textAlign: "center",
   },
   forgotPass: {
-    marginLeft: 200,
+    alignSelf: "flex-end",
+    marginRight: 50,
+    marginTop: 5,
   },
-  signIn: {
-   marginTop: 10
-  }
+  signUpText: {
+    marginTop: 15,
+    color: "#000",
+    textDecorationLine: "underline",
+  },
 });
